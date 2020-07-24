@@ -8,7 +8,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal class CharacterService : ICharacterService
+    public class CharacterService : ICharacterService
     {
         private AdventurerollerdbContext DbContext { get; }
         private ICharacterAttributeService CharacterAttributeService { get; }

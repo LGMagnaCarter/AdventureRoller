@@ -27,8 +27,6 @@ namespace AdventureRoller.Commands
             {
                 await ReplyAsync($"Errror switching character: {response.Error}");
             }
-
-            return Task.CompletedTask;
         }
 
     }

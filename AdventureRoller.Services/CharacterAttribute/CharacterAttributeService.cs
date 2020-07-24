@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class CharacterAttributeService : ICharacterAttributeService
+    public class CharacterAttributeService : ICharacterAttributeService
     {
         private AdventurerollerdbContext DbContext { get; }
 

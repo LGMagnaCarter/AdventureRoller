@@ -4,8 +4,11 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -19,19 +22,27 @@ namespace AdventureRoller
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
+        private IConfiguration _configuration;
 
         private static string prefix = "!";
 
         public async Task RunBotAsync()
         {
+            var environment = string.Empty;
+            #if DEBUG
+                environment = ".development";
+            #endif
+
+            var configurationbuilder =  new ConfigurationBuilder().AddJsonFile($"appsettings{environment}.json", optional: false, reloadOnChange: true);
+            _configuration = configurationbuilder.Build();
             _client = new DiscordSocketClient();
             _commands = new CommandService();
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .AddDbContext<AdventurerollerdbContext>(options => 
-                options.UseSqlServer(
-                    "Server=localhost\\SQLEXPRESS;Database=AdventureRollerDB; User Id=AdventureRollProgram; Password=Test123;", 
+                options.UseSqlServer(_configuration.GetValue<string>("DefaultConnection")
+                    , 
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.EnableRetryOnFailure(
@@ -45,7 +56,7 @@ namespace AdventureRoller
                 .AddTransient<ICharacterService, CharacterService>()
                 .AddTransient<IDiceService, DiceService>()
                 .BuildServiceProvider();
-            string botToken = "NzIxNDU0MjExNTk4MTIzMDI5.XuUw3A.czWB2bA8J-Nm_ErKGZWUQPijUAk";
+            string botToken = _configuration.GetValue<string>("BotToken");
 
             _client.Log += Log;
 

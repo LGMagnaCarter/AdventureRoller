@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AdventureRoller.Services
 {
-    internal class FileEditionsService : IEditionsService
+    public class FileEditionsService : IEditionsService
     {
         private static string TemplateLocation = "../../../Templates";
 

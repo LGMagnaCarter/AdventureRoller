@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal class DiceService : IDiceService
+    public class DiceService : IDiceService
     {
         private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[h]?[0-9]?[l]?[0-9]?");
 

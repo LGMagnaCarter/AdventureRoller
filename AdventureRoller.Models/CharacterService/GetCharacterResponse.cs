@@ -1,12 +1,12 @@
 ﻿namespace AdventureRoller.Models.CharacterService
 {
-    using AdventureRoller.Commands;
+    using AdventureRoller.DatabaseContext;
 
     class GetCharacterResponse : Response
     {
-        public CharacterGet Character { get; set; }
+        public Characters Character { get; set; }
 
-        public GetCharacterResponse(bool success, CharacterGet character, string error = "") : base(success, error)
+        public GetCharacterResponse(bool success, Characters character, string error = "") : base(success, error)
         {
             Character = character;
         }
