@@ -1,1 +1,1 @@
-﻿`!initiative` rolls a `!roll Init` roll for each other player in your voice channel, if they have a registered 'Initiative' attribute and puts them in order for the Dungeon Master
+﻿`!initiative` rolls a `!roll Init` roll for each other player in your voice channel, if they have a registered 'Initiative' attribute and returns in an ordered list.

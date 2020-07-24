@@ -22,11 +22,11 @@ namespace AdventureRoller.Commands
         [Command("initiative")]
         public async Task RollInitiative()
         {
-            var dungeonMaster = Context.Guild.GetUser(Context.Message.Author.Id);
+            var caller = Context.Guild.GetUser(Context.Message.Author.Id);
 
-            List<ulong> players = dungeonMaster.VoiceChannel.Users.Select(u => u.Id).ToList();
+            List<ulong> players = caller.VoiceChannel.Users.Select(u => u.Id).ToList();
 
-            players.Remove(dungeonMaster.Id);
+            players.Remove(caller.Id);
 
             SortedDictionary<int, ulong> playerScores = new SortedDictionary<int, ulong>();
 
