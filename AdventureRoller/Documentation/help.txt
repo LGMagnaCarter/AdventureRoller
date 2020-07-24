@@ -1,7 +1,10 @@
 ﻿What would you like help with? please type:
 `!help roll`
+`!help editions`
+`!help characters`
+`!help deletecharacters`
 `!help registercharacter`
 `!help updatecharacter`
 `!help changecharacter`
-`!help addattribute`
-`!help updateattribute`
+`!help updatecharacter`
+`!help initiative`
