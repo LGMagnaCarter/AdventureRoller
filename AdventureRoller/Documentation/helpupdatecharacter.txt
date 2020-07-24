@@ -1,0 +1,2 @@
+﻿`!updatecharacter <name> <level> { "<Attribute>" : "<Value>" }` will update `<Attribute>` to `<Value>` for `<name>` at `<level>`
+e.g. `!updatecharacter Luke 1 { "Longsword" : "1d20 + Str"}` will update will update `Luke level 1`'s Longsword to `1d20 + Str`

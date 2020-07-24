@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventureRoller", "AdventureRoller\AdventureRoller.csproj", "{2E6BC56F-4D15-420B-B933-D77AF05EAEC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E6BC56F-4D15-420B-B933-D77AF05EAEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E6BC56F-4D15-420B-B933-D77AF05EAEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E6BC56F-4D15-420B-B933-D77AF05EAEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E6BC56F-4D15-420B-B933-D77AF05EAEC6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFA7526F-57EB-4CBB-BC3B-48013F69DB09}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,35 @@
+﻿{
+   "ContextClassName": "AdventurerollerdbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "DatabaseContext",
+   "OutputPath": "DatabaseContext",
+   "ProjectRootNamespace": "AdventureRoller",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[CharacterAttributes]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Characters]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Editions]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

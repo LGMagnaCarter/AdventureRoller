@@ -1,0 +1,6 @@
+﻿`!roll XdY + Z` returns **X** dice of size **Y** and adds value **Z**
+`!roll 2d20 h1` returns the highest value from rolling 2d20
+`!roll Str` returns your actively registered characters' Strength with 1d20.
+`!roll 2d10 + Str` returns your registered characters' Strength with 2d10.
+
+for more information on character registration type `!help registercharacter`

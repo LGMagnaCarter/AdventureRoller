@@ -1,0 +1,7 @@
+﻿What would you like help with? please type:
+`!help roll`
+`!help registercharacter`
+`!help updatecharacter`
+`!help changecharacter`
+`!help addattribute`
+`!help updateattribute`

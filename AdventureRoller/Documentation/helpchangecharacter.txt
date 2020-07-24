@@ -1,0 +1,1 @@
+﻿`!changecharacter <name> <level>` changes which characters' attributes your `!roll` commands get.

@@ -1,0 +1,1 @@
+﻿`!deletecharacter <name>` will remove your character <name> attributes at all levels e.g. `!deletecharacter luke`

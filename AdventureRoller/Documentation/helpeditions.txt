@@ -1,0 +1,2 @@
+﻿`!editions` lists all available edition templates
+`!editions <edition>` gives a template for all required values for that edition

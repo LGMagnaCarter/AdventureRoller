@@ -1,0 +1,2 @@
+﻿`!characters` will get all registered character names at all levels you have registered
+`!characters <name> <level>` will return the full profile of <name> at <level>
