@@ -36,7 +36,8 @@
 
             foreach (var character in serviceResponse.Characters.OrderBy(c => c.Edition).ThenBy(c => c.Name).ThenBy(c => c.Level))
             {
-                response += $"{character.Edition}\t{character.Level}\t{character.Name}\r\n";
+                var active = character.Active ? "Active" : "";
+                response += $"{character.Edition}\t{character.Level}\t{character.Name}\t{active}\r\n";
             }
 
             await ReplyAsync(response);

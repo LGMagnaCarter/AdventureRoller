@@ -68,7 +68,7 @@
             {
                 DbContext.SaveChanges();
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 DbContext.RejectChanges();
                 return new Response(false, "Error committing to database!");
@@ -150,7 +150,7 @@
             {
                 return $"No Attribute starts with {attribute}";
             }
-            else if (caList.Count() > 1)
+            if (caList.Count() > 1)
             {
                 return $"Conflict: {attribute} could refer to {string.Join(",", caList.Select(a => a.Name).ToList())}";
             }

@@ -4,6 +4,7 @@ using AdventureRoller.Services;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System;
 
 namespace AdventureRoller.Commands
 {
@@ -22,45 +23,53 @@ namespace AdventureRoller.Commands
         [Command("initiative")]
         public async Task RollInitiative()
         {
-            var caller = Context.Guild.GetUser(Context.Message.Author.Id);
-
-            List<ulong> players = caller.VoiceChannel.Users.Select(u => u.Id).ToList();
-
-            players.Remove(caller.Id);
-
-            SortedDictionary<int, ulong> playerScores = new SortedDictionary<int, ulong>();
-
-            List<string> failedInitiative = new List<string>();
-
-            foreach (var player in players)
+            try
             {
-                var attributeResponse = CharacterService.GetAttribute(player, "Init");
+                var caller = Context.Guild.GetUser(Context.Message.Author.Id);
 
-                if (!attributeResponse.Success)
+                List<ulong> players = caller.VoiceChannel.Users.Where(u => !u.IsBot).Select(u => u.Id).ToList();
+
+                players.Remove(caller.Id);
+
+                SortedDictionary<ulong, int> playerScores = new SortedDictionary<ulong, int>();
+
+                List<string> failedInitiative = new List<string>();
+
+                foreach (var player in players)
                 {
-                    await ReplyAsync($"`could not retrieve {Context.Guild.GetUser(player).Username} initiative. Error: {attributeResponse.Error}");
-                    continue;
+                    var attributeResponse = CharacterService.GetAttribute(player, "Init");
+
+                    if (!attributeResponse.Success)
+                    {
+                        await ReplyAsync($"`could not retrieve {Context.Guild.GetUser(player).Username} initiative. Error: {attributeResponse.Error}");
+                        continue;
+                    }
+
+                    if (!int.TryParse(attributeResponse.Value, out int init))
+                    {
+                        failedInitiative.Add(Context.Guild.GetUser(player).Mention);
+                    }
+                    playerScores.Add(player, DiceService.RollExactDice("1d20").Sum() + init);
                 }
 
-                if (!int.TryParse(attributeResponse.Value, out int init))
+                if (failedInitiative.Any())
                 {
-                    failedInitiative.Add(Context.Guild.GetUser(player).Mention);
+                    await ReplyAsync($"Players not registered: {string.Join(',', failedInitiative)}");
                 }
-                playerScores.Add(DiceService.RollExactDice("1d20").Sum() + init, player);
-            }
 
-            if (failedInitiative.Any())
+                string response = string.Empty;
+                foreach (var player in playerScores.OrderByDescending(x => x.Value))
+                {
+                    response += $"`[{Context.Guild.GetUser(player.Key).Username}]` : {player.Value}\r\n";
+                }
+
+
+                await ReplyAsync(response);
+            }
+            catch(Exception e)
             {
-                await ReplyAsync($"Players not registered: {string.Join(',', failedInitiative)}");
+                string s = e.Message;
             }
-
-            string response = string.Empty;
-            foreach (var player in playerScores.Reverse())
-            {
-                response += $"`[{Context.Guild.GetUser(player.Value).Username}]` : {player.Key}\r\n"; 
-            }
-
-            await ReplyAsync(response);
 
             await Task.CompletedTask;
         }

@@ -79,7 +79,7 @@
 
         public Response UpdateCharacter(ulong discordId, string name, int level, Dictionary<string, string> attributes)
         {
-            var characterList = DbContext.Characters.AsQueryable().Where(c => c.DiscordId == discordId && c.Name == name);
+            var characterList = DbContext.Characters.AsQueryable().Where(c => c.DiscordId == discordId && c.Name == name && c.Level == level);
 
             var error = ValidateOnlyOne(characterList, name);
 
@@ -99,12 +99,6 @@
 
                 foreach (var character in characterList)
                 {
-                    if(character.Active)
-                    {
-                        DbContext.RejectChanges();
-                        return new Response(false, $"character {character.Name}:{character.Level} is active");
-                    }
-
                     CharacterAttributeService.DeleteCharacterAttributes(character.CharacterId, level);
                     DbContext.Remove(character);
                 }
