@@ -27,13 +27,13 @@ namespace AdventureRoller.DatabaseContext
                 entity.HasKey(e => new { e.CharacterId, e.CharacterLevel, e.Name })
                     .HasName("PK_CharacterAttributes_CharacterId");
 
-                entity.Property(e => e.Name).HasMaxLength(25);
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.Dice).HasMaxLength(25);
 
                 entity.Property(e => e.Value)
                     .IsRequired()
-                    .HasMaxLength(25);
+                    .HasMaxLength(70);
 
                 entity.HasOne(d => d.Character)
                     .WithMany(p => p.CharacterAttributes)

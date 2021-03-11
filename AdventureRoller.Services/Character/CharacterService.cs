@@ -59,22 +59,32 @@
         {
             var character = DbContext.Characters.FirstOrDefault(c => c.Active == true && c.DiscordId == discordId);
 
-            var characterattribute = CharacterAttributeService.GetCharacterAttribute(character.CharacterId, character.Level, attribute);
+            var attributeResponse = CharacterAttributeService.GetCharacterAttribute(character.CharacterId, character.Level, attribute);
+
+            if (!attributeResponse.Success)
+            {
+                return attributeResponse;
+            }
 
             //todo: add error handling for stringresponse
 
-            var characterAttribute2 = characterattribute;
+            var characterAttribute2 = attributeResponse;
 
             foreach(Match match in WordRegex.Matches(characterAttribute2.Value))
             {
 
-                var characterSubAttribute = CharacterAttributeService.GetCharacterAttribute(character.CharacterId, character.Level, match.Value);
+                var subAttributeResponse = CharacterAttributeService.GetCharacterAttribute(character.CharacterId, character.Level, match.Value);
+
+                if (!subAttributeResponse.Success)
+                {
+                    return subAttributeResponse;
+                }
 
                 var regex = new Regex(Regex.Escape(match.Value));
-                characterattribute.Value = regex.Replace(characterattribute.Value, characterSubAttribute.Value, 1);
+                attributeResponse.Value = regex.Replace(attributeResponse.Value, subAttributeResponse.Value, 1);
             }
 
-            return characterattribute;
+            return attributeResponse;
         }
 
         public Response UpdateCharacter(ulong discordId, string name, int level, Dictionary<string, string> attributes)

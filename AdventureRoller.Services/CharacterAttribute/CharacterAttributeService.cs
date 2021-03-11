@@ -36,7 +36,7 @@
             {
                 DbContext.SaveChanges();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 DbContext.RejectChanges();
                 return new Response(false, "Error committing to database!");
@@ -68,7 +68,7 @@
             {
                 DbContext.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 DbContext.RejectChanges();
                 return new Response(false, "Error committing to database!");
@@ -79,9 +79,9 @@
 
         public StringResponse GetCharacterAttribute(Guid characterId, int level, string attribute)
         {
-            var caList =  DbContext.CharacterAttributes.AsQueryable().Where(ca => ca.CharacterId == characterId && ca.CharacterLevel == level && ca.Name.StartsWith(attribute));
+            var caList = DbContext.CharacterAttributes.AsQueryable().Where(ca => ca.CharacterId == characterId && ca.CharacterLevel == level && ca.Name.StartsWith(attribute));
 
-            var error = ValidateUpdate(caList, attribute);
+            var error = ValidateOnlyOne(caList, attribute);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -91,13 +91,13 @@
             return new StringResponse(true, caList.First().Value);
         }
 
-        public Response UpdateCharacterAttributes(Guid characterId, int level, Dictionary<string,string> attributes)
+        public Response UpdateCharacterAttributes(Guid characterId, int level, Dictionary<string, string> attributes)
         {
             foreach (var attribute in attributes)
             {
                 var caList = DbContext.CharacterAttributes.AsQueryable().Where(ca => ca.CharacterId == characterId && ca.CharacterLevel == level && ca.Name.StartsWith(attribute.Key));
 
-                var error = ValidateUpdate(caList, attribute.Key);
+                var error = ValidateOnlyOne(caList, attribute.Key);
 
                 if (!string.IsNullOrEmpty(error))
                 {
@@ -112,7 +112,7 @@
             {
                 DbContext.SaveChanges();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 DbContext.RejectChanges();
                 return new Response(false, "Error committing to database");
@@ -134,7 +134,7 @@
 
                 DbContext.SaveChanges();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 DbContext.RejectChanges();
                 return new Response(false, "Error removing character attributes from database");
@@ -144,7 +144,7 @@
         }
 
         #region Validation
-        private string ValidateUpdate(IQueryable<CharacterAttributes> caList, string attribute)
+        private string ValidateOnlyOne(IQueryable<CharacterAttributes> caList, string attribute)
         {
             if (!caList.Any())
             {

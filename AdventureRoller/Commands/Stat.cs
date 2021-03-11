@@ -30,6 +30,11 @@
             {
                 var attributeResponse = CharacterService.GetAttribute(Context.Message.Author.Id, match.Value);
 
+                if (!attributeResponse.Success)
+                {
+                    await ReplyAsync($"Error: {match.Value} - {attributeResponse.Error}");
+                }
+
                 var regex = new Regex(Regex.Escape(match.Value));
                 displayEquationString = regex.Replace(displayEquationString, $"`[{match.Value} = {attributeResponse.Value}]`", 1);
                 equationString = regex.Replace(equationString, attributeResponse.Value, 1);

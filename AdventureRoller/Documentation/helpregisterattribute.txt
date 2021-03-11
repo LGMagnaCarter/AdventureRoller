@@ -1,0 +1,6 @@
+﻿`!registerattribute <name> <level> { "<Attribute>" : "<Value>",..., "<Attribute>" : "<Value>" }` 
+
+`<name>` and `<level>` must not correspond to another of your existing characters
+`<Attribute>` must not be a partial of another attribute e.g. **Str** and **Strength** is not valid
+`<Value>` can have a number, reference another Attribute, and roll a dice e.g. **1d20 + Str + 1** is valid.
+For a reference template, please use templates provided in `!editions <edition>` for convenience
