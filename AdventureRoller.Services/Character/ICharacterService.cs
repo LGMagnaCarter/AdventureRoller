@@ -16,7 +16,7 @@
 
         ListCharactersResponse ListCharacters(ulong discordId);
 
-        Characters GetCharacter(ulong discordId, string name, int level);
+        Characters GetCharacter(ulong discordId, string name = null, int? level = null);
 
         Response DeleteCharacter(ulong discordId, string name, int? level = null);
     }

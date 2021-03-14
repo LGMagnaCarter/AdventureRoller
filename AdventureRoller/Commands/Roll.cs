@@ -2,6 +2,7 @@
 {
     using AdventureRoller.Services;
     using Discord.Commands;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -13,21 +14,26 @@
 
         private IDiceService DiceService { get; }
 
-        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[h]?[0-9]?[l]?[0-9]?");
+        private Dictionary<string, IEditionsService> EditionService { get; }
+
+        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[r]?[0-9]{0,3}?[s][0-9]{0,3}?[h]?[0-9]?[l]?[0-9]?");
 
         private Regex ModifiersRegex = new Regex(@"(?<! )[\*\+\-\/](?! )");
 
         private Regex WordRegex = new Regex("[A-z]{3,15}");
 
-        public Roll(ICharacterService characterService, IDiceService diceService)
+        public Roll(ICharacterService characterService, IDiceService diceService, IEnumerable<IEditionsService> editionsService)
         {
             CharacterService = characterService;
             DiceService = diceService;
+            EditionService = editionsService.ToDictionary(x => x.ToString());
         }
 
         [Command("roll")]
         public async Task Setup([Remainder]string diceString)
         {
+            var editionService = EditionService[CharacterService.GetCharacter(Context.Message.Author.Id).Edition];
+
             diceString = diceString.ToLower().Replace(" ", "");
 
             var displayEquationString = diceString;
@@ -53,8 +59,8 @@
             // if no diceroll, add 1d20
             if(!DiceRegex.Match(equationString).Success)
             {
-                equationString = $"1d20 + {equationString}";
-                displayEquationString = $"`1d20` + {displayEquationString}";
+                equationString = editionService.DefaultRoll(equationString);
+                displayEquationString = editionService.DefaultRoll(displayEquationString);
             }
 
             match = DiceRegex.Match(equationString);
@@ -65,7 +71,7 @@
                 var regex = new Regex(Regex.Escape(match.Value));
                 displayEquationString = regex.Replace(displayEquationString, $"[{match.Value} = {string.Join(", ", rolls.Select(n => n.ToString()).ToArray())}]", 1);
 
-                equationString = regex.Replace(equationString, rolls.Sum().ToString(), 1);
+                equationString = regex.Replace(equationString, editionService.ParseRoll(rolls, match.Value), 1);
 
                 match = DiceRegex.Match(equationString);
             }
@@ -74,12 +80,7 @@
 
             displayEquationString = $"{username} roll: {displayEquationString}";
 
-            DataTable dt = new DataTable();
-
-            double result = 0;
-
-            var temp = dt.Compute(equationString, string.Empty).ToString();
-            result = double.Parse(temp);
+            var result = editionService.CompleteRoll(equationString);
 
             await ReplyAsync($"{CleanUp(displayEquationString)} results in **{result}**");
         }

@@ -48,9 +48,17 @@
             return new ListCharactersResponse(true, DbContext.Characters.AsQueryable().Where(c => c.DiscordId == discordId).ToList());
         }
 
-        public Characters GetCharacter(ulong discordId, string name, int level)
+        public Characters GetCharacter(ulong discordId, string name = null, int? level = null)
         {
-            var character = DbContext.Characters.Include(c => c.CharacterAttributes).AsQueryable().FirstOrDefault(c => c.DiscordId == discordId && c.Name == name && c.Level == level);
+            Characters character;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                character = DbContext.Characters.Include(c => c.CharacterAttributes).AsQueryable().FirstOrDefault(c => c.DiscordId == discordId && c.Active);
+            }
+            else
+            {
+                character = DbContext.Characters.Include(c => c.CharacterAttributes).AsQueryable().FirstOrDefault(c => c.DiscordId == discordId && c.Name == name && c.Level == level);
+            }
 
             return character.CharacterId != null ? character : null;
         }

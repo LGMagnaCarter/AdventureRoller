@@ -7,20 +7,19 @@
 
     public class DiceService : IDiceService
     {
-        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[h]?[0-9]?[l]?[0-9]?");
-
         private Regex NumberRegex = new Regex("[0-9]{1,45}");
+
+        private Random random = new Random();
 
         public List<int> RollExactDice(string dice)
         {
             int numberOfRolls = int.Parse(dice.IndexOf('d') == 0 ? "1" : dice.Substring(0, dice.IndexOf('d')));
             int diceSize = GetNumberAfterCharacter(dice, 'd');
             List<int> results = new List<int>();
-            Random r = new Random();
 
             for (int i = 0; i < numberOfRolls; i++)
             {
-                results.Add(r.Next(1, diceSize + 1));
+                RollDice(results, diceSize, dice);
             }
 
             if (!(dice.Contains('l') || dice.Contains('h')))
@@ -51,6 +50,23 @@
             var match = NumberRegex.Match(s, s.IndexOf(c));
 
             return int.Parse(match.Value);
+        }
+
+        private List<int> RollDice(List<int> results, int diceSize, string diceParams)
+        {
+            var result = random.Next(1, diceSize + 1);
+            results.Add(result);
+
+            if(diceParams.Contains('r'))
+            {
+                var rerollVal = GetNumberAfterCharacter(diceParams, 'r');
+                if(result >= rerollVal)
+                {
+                    RollDice(results, diceSize, diceParams);
+                }
+            }
+
+            return results;
         }
     }
 }
