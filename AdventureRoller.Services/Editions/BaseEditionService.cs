@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AdventureRoller.Services
@@ -10,7 +12,7 @@ namespace AdventureRoller.Services
         private Regex NumberRegex = new Regex("[0-9]{1,45}");
         private static string TemplateLocation = "../../../Templates";
         public string Version { get; }
-        public BaseEditionService(string version)
+        public BaseEditionService(string version = "Default")
         {
             Version = version;
         }
@@ -43,17 +45,18 @@ namespace AdventureRoller.Services
 
         public virtual string DefaultRoll(string roll)
         {
-            throw new System.NotImplementedException();
+            return roll;
         }
 
         public virtual string CompleteRoll(string roll)
         {
-            throw new System.NotImplementedException();
+            DataTable dt = new DataTable();
+            return dt.Compute(roll, string.Empty).ToString();
         }
 
         public virtual string ParseRoll(List<int> rolls, string diceParams)
         {
-            throw new System.NotImplementedException();
+            return rolls.Sum().ToString();
         }
 
         internal int GetNumberAfterCharacter(string s, char c)

@@ -40,9 +40,9 @@ namespace AdventureRoller
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
-                .AddDbContext<AdventurerollerdbContext>(options => 
+                .AddDbContext<AdventurerollerdbContext>(options =>
                 options.UseSqlServer(_configuration.GetValue<string>("DefaultConnection")
-                    , 
+                    ,
                     sqlServerOptionsAction: sqlOptions =>
                     {
                         sqlOptions.EnableRetryOnFailure(
@@ -51,6 +51,7 @@ namespace AdventureRoller
                         errorNumbersToAdd: null);
                     }
                 ))
+                .AddTransient<IEditionsService, BaseEditionService>()
                 .AddTransient<IEditionsService, DNDEditionsService>()
                 .AddTransient<IEditionsService, WODEditionsService>()
                 .AddTransient<ICharacterAttributeService, CharacterAttributeService>()

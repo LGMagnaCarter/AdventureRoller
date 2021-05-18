@@ -16,7 +16,7 @@
 
         private Dictionary<string, IEditionsService> EditionService { get; }
 
-        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[r]?[0-9]{0,3}?[s][0-9]{0,3}?[h]?[0-9]?[l]?[0-9]?");
+        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[r]?[0-9]?[s]?[0-9]?[h]?[0-9]?[l]?[0-9]?");
 
         private Regex ModifiersRegex = new Regex(@"(?<! )[\*\+\-\/](?! )");
 
@@ -32,7 +32,8 @@
         [Command("roll")]
         public async Task Setup([Remainder]string diceString)
         {
-            var editionService = EditionService[CharacterService.GetCharacter(Context.Message.Author.Id).Edition];
+            var character = CharacterService.GetCharacter(Context.Message.Author.Id);
+            var editionService = EditionService[character != null ? character.Edition : "Default"];
 
             diceString = diceString.ToLower().Replace(" ", "");
 

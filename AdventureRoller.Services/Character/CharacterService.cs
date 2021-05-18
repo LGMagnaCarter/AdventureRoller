@@ -60,7 +60,7 @@
                 character = DbContext.Characters.Include(c => c.CharacterAttributes).AsQueryable().FirstOrDefault(c => c.DiscordId == discordId && c.Name == name && c.Level == level);
             }
 
-            return character.CharacterId != null ? character : null;
+            return character == null || character.CharacterId != null ? character : null;
         }
 
         public StringResponse GetAttribute(ulong discordId, string attribute)
