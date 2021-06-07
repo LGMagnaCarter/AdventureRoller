@@ -2,6 +2,7 @@
 {
     using AdventureRoller.Services;
     using Discord.Commands;
+    using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
@@ -10,6 +11,7 @@
 
     public class Roll : ModuleBase<SocketCommandContext>
     {
+        private static ulong lastMessageSender { get; set; }
         private ICharacterService CharacterService { get; }
 
         private IDiceService DiceService { get; }
@@ -30,8 +32,15 @@
         }
 
         [Command("roll")]
-        public async Task Setup([Remainder]string diceString)
+        public async Task Setup([Remainder] string diceString)
         {
+            if (Context.Message.Author.Id != lastMessageSender)
+            {
+                await ReplyAsync("_ _");
+            }
+
+            lastMessageSender = Context.Message.Author.Id;
+
             var character = CharacterService.GetCharacter(Context.Message.Author.Id);
             var editionService = EditionService[character != null ? character.Edition : "Default"];
 
@@ -51,21 +60,21 @@
                 }
 
                 var regex = new Regex(Regex.Escape(match.Value));
-                displayEquationString = regex.Replace(displayEquationString, $"`[{match.Value} = {attributeResponse.Value}]`", 1);
+                displayEquationString = regex.Replace(displayEquationString, $"[{match.Value} = {attributeResponse.Value}]", 1);
                 equationString = regex.Replace(equationString, attributeResponse.Value, 1);
 
                 match = WordRegex.Match(equationString);
             }
 
             // if no diceroll, add 1d20
-            if(!DiceRegex.Match(equationString).Success)
+            if (!DiceRegex.Match(equationString).Success)
             {
                 equationString = editionService.DefaultRoll(equationString);
                 displayEquationString = editionService.DefaultRoll(displayEquationString);
             }
 
             match = DiceRegex.Match(equationString);
-            while(match.Success)
+            while (match.Success)
             {
                 var rolls = DiceService.RollExactDice(match.Value);
 
@@ -77,13 +86,13 @@
                 match = DiceRegex.Match(equationString);
             }
 
-            var username = Context.Message.Author.Username;
-
-            displayEquationString = $"{username} roll: {displayEquationString}";
+            var username = Context.Message.Author.Mention;
 
             var result = editionService.CompleteRoll(equationString);
 
-            await ReplyAsync($"{CleanUp(displayEquationString)} results in **{result}**");
+            await Context.Message.DeleteAsync();
+
+            await ReplyAsync($"{username} **{CleanUp(diceString)}** roll: \r\n`{displayEquationString}` results in... **{result}**");
         }
 
         private string CleanUp(string s)
