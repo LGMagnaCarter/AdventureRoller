@@ -34,6 +34,16 @@
         [Command("roll")]
         public async Task Setup([Remainder] string diceString)
         {
+            foreach (string diceRoll in diceString.Split('|'))
+            {
+                await RollDice(diceRoll);
+            }
+            await Context.Message.DeleteAsync();
+        }
+
+        private async Task RollDice(string diceString)
+        {
+
             if (Context.Message.Author.Id != lastMessageSender)
             {
                 await ReplyAsync("_ _");
@@ -89,8 +99,6 @@
             var username = Context.Message.Author.Mention;
 
             var result = editionService.CompleteRoll(equationString);
-
-            await Context.Message.DeleteAsync();
 
             await ReplyAsync($"{username} **{CleanUp(diceString)}** roll: \r\n`{displayEquationString}` results in... **{result}**");
         }
