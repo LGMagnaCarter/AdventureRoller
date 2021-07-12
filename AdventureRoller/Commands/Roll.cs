@@ -9,7 +9,7 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    public class Roll : ModuleBase<SocketCommandContext>
+    public class Rolls : ModuleBase<SocketCommandContext>
     {
         private static ulong lastMessageSender { get; set; }
         private ICharacterService CharacterService { get; }
@@ -18,13 +18,13 @@
 
         private Dictionary<string, IEditionsService> EditionService { get; }
 
-        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}[r]?[0-9]?[s]?[0-9]?[h]?[0-9]?[l]?[0-9]?");
+        private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}(?:[r][0-9]{1,3}|)(?:[s][0-9]{1,3}|)(?:[f][0-9]{1,3}|)(?:[h][0-9]{1,3}|)(?:[l][0-9]{1,3}|)");
 
         private Regex ModifiersRegex = new Regex(@"(?<! )[\*\+\-\/](?! )");
 
         private Regex WordRegex = new Regex("[A-z]{3,15}");
 
-        public Roll(ICharacterService characterService, IDiceService diceService, IEnumerable<IEditionsService> editionsService)
+        public Rolls(ICharacterService characterService, IDiceService diceService, IEnumerable<IEditionsService> editionsService)
         {
             CharacterService = characterService;
             DiceService = diceService;
@@ -32,7 +32,7 @@
         }
 
         [Command("roll")]
-        public async Task Setup([Remainder] string diceString)
+        public async Task Roll([Remainder] string diceString)
         {
             foreach (string diceRoll in diceString.Split('|'))
             {
@@ -41,8 +41,46 @@
             await Context.Message.DeleteAsync();
         }
 
+        [Command("chance")]
+        public async Task Chance()
+        {
+            var character = CharacterService.GetCharacter(Context.Message.Author.Id);
+            var editionService = EditionService[character != null ? character.Edition : "Default"];
+
+            string diceString = editionService.GetRoll("Chance", null);
+
+            await RollDice(diceString);
+
+            await Context.Message.DeleteAsync();
+        }
+
+        [Command("rote")]
+        public async Task Rote(string amount)
+        {
+            string edition = null;
+            if (string.IsNullOrEmpty(edition))
+            {
+                var character = CharacterService.GetCharacter(Context.Message.Author.Id);
+
+                edition = character != null ? character.Edition : "Default";
+            }
+
+            var editionservice = EditionService[edition];
+
+            var diceString = editionservice.GetRoll("Rote", new object[] { int.Parse(amount) });
+
+            await RollDice(diceString);
+
+            await Context.Message.DeleteAsync();
+        }
+
         private async Task RollDice(string diceString)
         {
+            List<string> modifiers = diceString.Split('\\').ToList();
+
+            diceString = modifiers.First();
+
+            modifiers.RemoveAt(0);
 
             if (Context.Message.Author.Id != lastMessageSender)
             {
@@ -76,12 +114,18 @@
                 match = WordRegex.Match(equationString);
             }
 
+            equationString = editionService.PrepRoll(equationString);
+
             // if no diceroll, add 1d20
             if (!DiceRegex.Match(equationString).Success)
             {
-                equationString = editionService.DefaultRoll(equationString);
-                displayEquationString = editionService.DefaultRoll(displayEquationString);
+                equationString = editionService.GetDefaultRoll(equationString);
+                displayEquationString = editionService.GetDefaultRoll(displayEquationString);
             }
+
+            equationString = editionService.ModifyRoll(equationString, modifiers);
+            displayEquationString = editionService.ModifyRoll(displayEquationString, modifiers);
+            diceString = editionService.ModifyRoll(diceString, modifiers);
 
             match = DiceRegex.Match(equationString);
             while (match.Success)

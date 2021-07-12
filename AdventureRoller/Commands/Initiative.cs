@@ -12,17 +12,24 @@ namespace AdventureRoller.Commands
     {
         private Regex DiceRegex = new Regex("[0-9]{0,45}[d][0-9]{1,45}");
         private IDiceService DiceService { get; }
+        private Dictionary<string, IEditionsService> EditionService { get; }
         private ICharacterService CharacterService { get; }
 
-        public Initiative(IDiceService diceService, ICharacterService characterService)
+        public Initiative(IDiceService diceService, ICharacterService characterService, IEnumerable<IEditionsService> editionsService)
         {
             CharacterService = characterService;
             DiceService = diceService;
+            EditionService = editionsService.ToDictionary(x => x.ToString());
         }
 
         [Command("initiative")]
-        public async Task RollInitiative()
+        public async Task RollInitiative([Remainder] string edition)
         {
+            if(string.IsNullOrEmpty(edition))
+            {
+                edition = "Default";
+            }
+
             try
             {
                 var caller = Context.Guild.GetUser(Context.Message.Author.Id);
@@ -49,7 +56,12 @@ namespace AdventureRoller.Commands
                     {
                         failedInitiative.Add(Context.Guild.GetUser(player).Mention);
                     }
-                    playerScores.Add(player, DiceService.RollExactDice("1d20").Sum() + init);
+
+                    var editionservice = EditionService[edition];
+
+                    var roll = editionservice.GetRoll("Initiative");
+
+                    playerScores.Add(player, DiceService.RollExactDice(roll).Sum() + init);
                 }
 
                 if (failedInitiative.Any())
@@ -66,7 +78,7 @@ namespace AdventureRoller.Commands
 
                 await ReplyAsync(response);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string s = e.Message;
             }

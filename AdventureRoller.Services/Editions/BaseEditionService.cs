@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using AdventureRoller.Services.Attributes;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace AdventureRoller.Services
@@ -22,7 +25,7 @@ namespace AdventureRoller.Services
             var editionsFileNames = Directory.GetFiles(TemplateLocation, "*.json");
 
             var editionsList = new List<string>();
-            foreach(var filename in editionsFileNames)
+            foreach (var filename in editionsFileNames)
             {
                 var name = filename.Substring(0, filename.IndexOf(".json")).Substring(filename.LastIndexOf('\\')).Replace("\\", "");
                 editionsList.Add(name);
@@ -43,7 +46,7 @@ namespace AdventureRoller.Services
             return Version;
         }
 
-        public virtual string DefaultRoll(string roll)
+        public virtual string GetDefaultRoll(string roll)
         {
             return roll;
         }
@@ -65,5 +68,49 @@ namespace AdventureRoller.Services
 
             return int.Parse(match.Value);
         }
+
+        [CustomRoll("Chance")]
+        public virtual string GetChanceRoll()
+        {
+            return "1d20";
+        }
+
+        public virtual string ModifyRoll(string roll, List<string> modifiers)
+        {
+            return roll;
+        }
+
+        internal virtual string GetRoll<TEntity>(string rollName, object[] parameters = null)
+        {
+            var rollMethods = typeof(TEntity).GetMethods().Where(methodInfo => methodInfo.GetCustomAttributes(typeof(CustomRollAttribute), true).Length > 0);
+
+            if(rollMethods.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            foreach( var rollMethod in rollMethods)
+            {
+                var attribute = (CustomRollAttribute)rollMethod.GetCustomAttribute(typeof(CustomRollAttribute));
+
+                if (attribute.GetName().ToLowerInvariant() == rollName.ToLowerInvariant())
+                {
+                    return rollMethod.Invoke((TEntity)Activator.CreateInstance(typeof(TEntity)), parameters).ToString();
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public virtual string GetRoll(string rollName, object[] parameters)
+        {
+            return GetRoll<BaseEditionService>(rollName, parameters);
+        }
+
+        public virtual string PrepRoll(string roll)
+        {
+            return roll;
+        }
+
     }
 }

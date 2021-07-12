@@ -11,7 +11,7 @@ namespace AdventureRoller.Services
 
         }
 
-        public override string DefaultRoll(string roll)
+        public override string GetDefaultRoll(string roll)
         {
             return $"1d20 + {roll}";
         }
@@ -25,6 +25,11 @@ namespace AdventureRoller.Services
         {
             DataTable dt = new DataTable();
             return dt.Compute(roll, string.Empty).ToString();
+        }
+
+        public override string GetRoll(string rollName, object[] parameters = null)
+        {
+            return GetRoll<DNDEditionsService>(rollName, parameters);
         }
     }
 }
