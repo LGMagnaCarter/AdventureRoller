@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AdventureRoller.Services.Attributes;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -19,6 +20,12 @@ namespace AdventureRoller.Services
         public override string ParseRoll(List<int> rolls, string diceParams)
         {
             return rolls.Sum().ToString();
+        }
+
+        [CustomRoll("Initiative")]
+        public string GetInitiativeRoll()
+        {
+            return "1d20";
         }
 
         public override string CompleteRoll(string roll)

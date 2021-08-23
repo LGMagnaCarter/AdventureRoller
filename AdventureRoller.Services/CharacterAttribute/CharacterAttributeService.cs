@@ -79,7 +79,7 @@
 
         public StringResponse GetCharacterAttribute(Guid characterId, int level, string attribute)
         {
-            var caList = DbContext.CharacterAttributes.AsQueryable().Where(ca => ca.CharacterId == characterId && ca.CharacterLevel == level && ca.Name.StartsWith(attribute));
+            var caList = DbContext.CharacterAttributes.AsQueryable().Where(ca => ca.CharacterId == characterId && ca.Name.StartsWith(attribute));
 
             var error = ValidateOnlyOne(caList, attribute);
 
