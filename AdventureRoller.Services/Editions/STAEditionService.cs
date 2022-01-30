@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 
 namespace AdventureRoller.Services
 {
-    // World of Darkness Module
-    public class WODEditionsService : BaseEditionService, IEditionsService
+    //Star Trek Adventures
+    public class STAEditionsService : BaseEditionService, IEditionsService
     {
         private readonly Regex numberModifier = new Regex("[0-9]{1,3}");
         private readonly Regex rerollRegex = new Regex("[r][0-9]{1,3}");
-        public WODEditionsService() : base("wod")
+        public STAEditionsService() : base("sta")
         {
 
         }
@@ -19,12 +19,7 @@ namespace AdventureRoller.Services
         public override string PrepRoll(string roll)
         {
             DataTable dt = new DataTable();
-            var value =  int.Parse(dt.Compute(roll, string.Empty).ToString());
-
-            if(value < 1)
-            {
-                return GetChanceRoll();
-            }
+            var value =  20 - int.Parse(dt.Compute(roll, string.Empty).ToString());
 
             return value.ToString();
         }
@@ -32,38 +27,26 @@ namespace AdventureRoller.Services
         [CustomRoll("Default")]
         public override string GetDefaultRoll(string roll)
         {
-            return $"{roll}d10r10s8";
+            roll = roll ?? "17";
+
+            return $"2d20s{roll}";
         }
 
         public override string ParseRoll(List<int> rolls, string diceParams)
         {
-            string response = $"Successes:{rolls.Count(x => x >= GetNumberAfterCharacter(diceParams, 's'))}";
-            if (diceParams.Contains('r'))
-            {
-                response += $"\r\nRerolls: {rolls.Count(x => x >= GetNumberAfterCharacter(diceParams, 'r'))}";
-            }
-            if (diceParams.Contains('f'))
-            {
-                response += $"\r\nCritical Failures: {rolls.Count(x => x <= GetNumberAfterCharacter(diceParams, 'f'))}";
-            }
+            var successes = rolls.Count(x => x >= GetNumberAfterCharacter(diceParams, 's') + 1);
+
+            successes += rolls.Count(x => x == 20);
+
+            var modifiedRolls = rolls.Select(x => { x = 21 - x; return x; }).ToList();
+
+            string response = $"{string.Join(',', modifiedRolls)}\r\nSuccesses:{successes}";
             return response;
         }
 
         public override string CompleteRoll(string roll)
         {
             return roll;
-        }
-
-        [CustomRoll("Chance")]
-        public override string GetChanceRoll()
-        {
-            return "1d10r10s10f1";
-        }
-
-        [CustomRoll("Rote")]
-        public string GetRoteRoll(int amount)
-        {
-            return $"{amount}d10r1-7s10 \\10again";
         }
 
         [CustomRoll("Initiative")]

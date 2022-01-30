@@ -116,7 +116,6 @@
 
             equationString = editionService.PrepRoll(equationString);
 
-            // if no diceroll, add 1d20
             if (!DiceRegex.Match(equationString).Success)
             {
                 equationString = editionService.GetDefaultRoll(equationString);

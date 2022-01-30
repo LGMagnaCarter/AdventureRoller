@@ -54,6 +54,7 @@ namespace AdventureRoller
                 .AddTransient<IEditionsService, BaseEditionService>()
                 .AddTransient<IEditionsService, DNDEditionsService>()
                 .AddTransient<IEditionsService, WODEditionsService>()
+                .AddTransient<IEditionsService, STAEditionsService>()
                 .AddTransient<ICharacterAttributeService, CharacterAttributeService>()
                 .AddTransient<ICharacterService, CharacterService>()
                 .AddTransient<IDiceService, DiceService>()
