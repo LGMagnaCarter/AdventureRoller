@@ -29,8 +29,8 @@ namespace AdventureRoller.Commands
                 var dialog = await ReplyAsync($"{Context.Message.Author.Mention}, are you sure you want to delete {name} at level {level}?");
                 await dialog.AddReactionAsync(checkmark);
                 await dialog.AddReactionAsync(cross);
-                Context.Client.ReactionAdded += new Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction, Task>(
-                    (Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel message, SocketReaction reaction) =>
+                Context.Client.ReactionAdded += new Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, SocketReaction, Task>(
+                    (Cacheable<IUserMessage, ulong> cache, Cacheable<IMessageChannel, ulong> message, SocketReaction reaction) =>
                     {
                         return Client_ReactionAdded(cache, message, reaction, name, level);
                     });
@@ -47,13 +47,14 @@ namespace AdventureRoller.Commands
             var dialog = await ReplyAsync($"{Context.Message.Author.Mention}, are you sure you want to delete {name} at all levels?");
             await dialog.AddReactionAsync(checkmark);
             await dialog.AddReactionAsync(cross);
-            Context.Client.ReactionAdded += new Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction, Task>(
-                (Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel message, SocketReaction reaction) => {
+            Context.Client.ReactionAdded += new Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, SocketReaction, Task>(
+                (Cacheable<IUserMessage, ulong> cache, Cacheable<IMessageChannel, ulong> message, SocketReaction reaction) =>
+                {
                     return Client_ReactionAdded(cache, message, reaction, name);
                 });
         }
 
-        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel message, SocketReaction reaction, string name, int? level = null)
+        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, Cacheable<IMessageChannel, ulong> message, SocketReaction reaction, string name, int? level = null)
         {
             if (Context.Message.Author.Id != reaction.User.Value.Id)
             {
